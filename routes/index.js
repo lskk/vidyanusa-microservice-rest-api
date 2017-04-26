@@ -2,38 +2,34 @@ var express = require('express');
 var router = express.Router();
 var app = express();
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1:27017/vidyanusa');
+//Pengaturan koneksi ke database
+var MongoClient = require('mongodb').MongoClient,
+  co = require('co'),
+  assert = require('assert');
 
-// Connected handler
-mongoose.connection.on('connected', function (err) {
-  console.log("Berhasil tersambung dengan Mongo DB");
-});
 
-// Error handler
-mongoose.connection.on('error', function (err) {
-  console.log("Gagal tersambung dengan Mongo DB, karena: "+err);
-});
-
-var Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId;
-
-var schoolsSchema = new Schema({
-  name : String
-});
-
-var schools = mongoose.model('school',schoolsSchema);
-
-/* GET home page. */
+/* GET list of schools. */
 router.get('/daftar_sekolah', function(req, res, next) {
-  //
-  schools.find()
-    .then(function(doc){
-        res.json({sekolah: doc});
-        //res.json({sekolah: res});
-        console.log('datanya:'+doc)
-    });
+  co(function*() {
+    // Connection URL
+    var url = 'mongodb://localhost:27017/vidyanusa';
+    // Use connect method to connect to the Server
+    var db = yield MongoClient.connect(url);
+    //console.log('Berhasil koneksi ke database');
+
+    // Get the collection
+    var col = db.collection('schools');
+    var docs = yield col.find().toArray();
+
+    res.json({status: '00' , message: 'success', data: docs});
+    // Close the connection
+    db.close();
+  }).catch(function(err) {
+    console.log(err.stack);
+  });
+
+
 });
 
 
