@@ -22,11 +22,18 @@ router.get('/daftar_sekolah', function(req, res, next) {
     var col = db.collection('schools');
     var docs = yield col.find().toArray();
 
-    res.json({status: '00' , message: 'success', data: docs});
     // Close the connection
     db.close();
+
+    res.json({status: '00' , message: 'success', data: docs});
+
   }).catch(function(err) {
     console.log(err.stack);
+
+    // Close the connection
+    db.close();
+
+    res.json({status: '01' , message: 'failed'});
   });
 
 
