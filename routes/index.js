@@ -40,8 +40,12 @@ router.get('/daftar_sekolah', function(req, res, next) {
 });
 
 router.post('/masuk', function(req, res, next) {
-  console.log(req.body.username);
-  console.log(req.body.password);
+  var username = req.body.username
+  var password = req.body.password
+
+  if(username == "" || password == ""){
+    res.json({status: 'failed' , message: 'Mohon isi semua field yang dibutuhkan'});
+  }else{
 
   co(function*() {
     // Connection URL
@@ -57,7 +61,11 @@ router.post('/masuk', function(req, res, next) {
     // Close the connection
     db.close();
 
-    res.json({status: '00' , message: 'success', data: docs, proceed: 1});
+    if(docs == null || docs == ''){
+      res.json({status: 'failed' , message: 'Username atau password anda salah' , results: docs});
+    }else{
+      res.json({status: 'success' , results: docs});
+    }
 
   }).catch(function(err) {
     console.log(err.stack);
@@ -65,8 +73,10 @@ router.post('/masuk', function(req, res, next) {
     // Close the connection
     db.close();
 
-    res.json({status: '01' , message: 'failed'});
+    res.json({status: 'failed' , message: 'Bermasalah pada server.'});
   });
+
+}
 
 
 });
