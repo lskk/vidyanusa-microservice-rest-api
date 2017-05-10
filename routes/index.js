@@ -9,17 +9,19 @@ var MongoClient = require('mongodb').MongoClient,
   assert = require('assert');
 
 
+
 /* GET list of schools. */
 router.get('/daftar_sekolah', function(req, res, next) {
+
   co(function*() {
     // Connection URL
-    var url = 'mongodb://localhost:27017/vidyanusa';
+
     // Use connect method to connect to the Server
-    var db = yield MongoClient.connect(url);
+    var db = yield MongoClient.connect(alamatMongoDB);
     //console.log('Berhasil koneksi ke database');
 
     // Get the collection
-    var col = db.collection('schools');
+    var col = db.collection('sekolah');
     var docs = yield col.find().toArray();
 
     // Close the connection
@@ -40,23 +42,23 @@ router.get('/daftar_sekolah', function(req, res, next) {
 });
 
 router.post('/masuk', function(req, res, next) {
-  var username = req.body.username
+  var email = req.body.email
   var password = req.body.password
 
-  if(username == "" || password == ""){
+  if(email == "" || password == ""){
     res.json({status: 'failed' , message: 'Mohon isi semua field yang dibutuhkan'});
   }else{
 
   co(function*() {
     // Connection URL
-    var url = 'mongodb://localhost:27017/vidyanusa';
+
     // Use connect method to connect to the Server
-    var db = yield MongoClient.connect(url);
+    var db = yield MongoClient.connect(alamatMongoDB);
     //console.log('Berhasil koneksi ke database');
 
     // Find the collection users
-    var col = db.collection('users');
-    var docs = yield col.find({username: req.body.username , password: req.body.password}).toArray();
+    var col = db.collection('pengguna');
+    var docs = yield col.find({email: req.body.email , sandi: req.body.password}).toArray();
 
     // Close the connection
     db.close();
