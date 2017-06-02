@@ -6,7 +6,7 @@ var moment = require('moment');
 require('express-group-routes');
 
 router.get('/daftar_sekolah', function(req, res, next) {
-
+  res.redirect('/public/daftar_sekolah');
 });
 
 router.get('/daftar_kegiatan', function(req, res, next) {

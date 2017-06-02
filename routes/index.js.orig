@@ -1,0 +1,96 @@
+var express = require('express');
+var router = express.Router();
+var app = express();
+var bodyParser = require('body-parser');
+var moment = require('moment');
+require('express-group-routes');
+
+<<<<<<< HEAD
+router.get('/daftar_sekolah', function(req, res, next) {
+=======
+//Pengaturan koneksi ke database
+var MongoClient = require('mongodb').MongoClient,
+  co = require('co'),
+  assert = require('assert');
+
+
+
+/* GET list of schools. */
+router.get('/daftar_sekolah', function(req, res, next) {
+
+  co(function*() {
+    // Connection URL
+
+    // Use connect method to connect to the Server
+    var db = yield MongoClient.connect(alamatMongoDB);
+    //console.log('Berhasil koneksi ke database');
+
+    // Get the collection
+    var col = db.collection('sekolah');
+    var docs = yield col.find().toArray();
+>>>>>>> 093db9b5dc8d7f9d94bf4df98f7ebfe3969c9057
+
+});
+
+router.get('/daftar_kegiatan', function(req, res, next) {
+
+});
+
+router.get('/profil/:userId', function(req, res) {
+
+})
+
+router.post('/masuk', function(req, res, next) {
+<<<<<<< HEAD
+
+});
+=======
+  var email = req.body.email
+  var password = req.body.password
+
+  if(email == "" || password == ""){
+    res.json({status: 'failed' , message: 'Mohon isi semua field yang dibutuhkan'});
+  }else{
+
+  co(function*() {
+    // Connection URL
+
+    // Use connect method to connect to the Server
+    var db = yield MongoClient.connect(alamatMongoDB);
+    //console.log('Berhasil koneksi ke database');
+
+    // Find the collection users
+    var col = db.collection('pengguna');
+    var docs = yield col.find({email: req.body.email , sandi: req.body.password}).toArray();
+>>>>>>> 093db9b5dc8d7f9d94bf4df98f7ebfe3969c9057
+
+router.post('/daftar_guru', function(req, res, next) {
+
+<<<<<<< HEAD
+});
+=======
+    if(docs == null || docs == ''){
+      res.json({status: 'failed' , message: 'Username atau password anda salah' , results: docs});
+    }else{
+      res.json({status: 'success' , results: docs});
+    }
+>>>>>>> 093db9b5dc8d7f9d94bf4df98f7ebfe3969c9057
+
+router.group("/kirim", (router) => {
+
+    router.post("/status", function(req, res, next) {
+
+<<<<<<< HEAD
+
+    });
+=======
+    res.json({status: 'failed' , message: 'Bermasalah pada server.'});
+  });
+
+}
+
+>>>>>>> 093db9b5dc8d7f9d94bf4df98f7ebfe3969c9057
+
+});
+
+module.exports = router;
