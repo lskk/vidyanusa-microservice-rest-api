@@ -13,3 +13,7 @@ exports.daftar_sekolah = function(req,res) {
 
    });
 }
+
+exports.daftar_guru = function(req,res) {
+
+}

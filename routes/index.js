@@ -5,6 +5,8 @@ var bodyParser = require('body-parser');
 var moment = require('moment');
 require('express-group-routes');
 
+var userController = require('../controllers/publicController');
+
 router.get('/daftar_sekolah', function(req, res, next) {
   res.redirect('/public/daftar_sekolah');
 });
@@ -21,9 +23,7 @@ router.post('/masuk', function(req, res, next) {
 
 });
 
-router.post('/daftar_guru', function(req, res, next) {
-
-});
+router.post('/daftar_guru', userController.daftar_guru);
 
 router.group("/kirim", (router) => {
 
