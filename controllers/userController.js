@@ -1,6 +1,7 @@
 //Import model
 var User = require('../models/userModel');
 var async = require('async');
+var moment = require('moment');
 
 exports.masuk = function(req,res) {
 
@@ -65,21 +66,31 @@ exports.daftar_proses_guru = function(req,res) {
     var errors = req.validationErrors();
 
     //Membuat objek inputan sudah di validasi dan dibersihkan
+
     var inputan = new User(
-      { email: req.body.email, username: req.body.username, nama_lengkap: req.body.nama_lengkap, jenis_kelamin: req.body.jenis_kelamin, sandi: req.body.sandi, sekolah: req.body.sekolah}
+      {
+        email: req.body.email,
+        sandi: req.body.sandi,
+        peran: 4,
+        sekolah: req.body.sekolah,
+        profil: {
+          username: req.body.username,
+          nama_lengkap: req.body.nama_lengkap,
+          jenis_kelamin: req.body.jenis_kelamin,
+          profil_picture: '',
+          bio: ''
+        },
+        mobile_session: '',
+        remember_token: '',
+        created_at: moment().format('MMMM Do YYYY, h:mm:ss a'),
+        updated_at: moment().format('MMMM Do YYYY, h:mm:ss a')
+      }
     );
 
     //Eksekusi validasi
   if(errors){//Terjadinya kesalahan
-      //console.log('Errornya:'+JSON.stringify(errors))
       return res.json({success: false, data: errors})
   }else{//Input ke collection
-
-    args = {
-    	data: { email: inputan.email, username: inputan.username, nama_lengkap: inputan.nama_lengkap, jenis_kelamin: inputan.jenis_kelamin, sandi: inputan.sandi, sekolah: inputan.sekolah},
-    	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    };
-
     //Query ke collection
     inputan.save(function(err){
       if (err) {
