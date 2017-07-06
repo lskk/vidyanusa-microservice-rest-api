@@ -79,11 +79,7 @@ exports.daftar_proses_guru = function(req,res) {
           jenis_kelamin: req.body.jenis_kelamin,
           profil_picture: '',
           bio: ''
-        },
-        mobile_session: '',
-        remember_token: '',
-        created_at: moment().format('MMMM Do YYYY, h:mm:ss a'),
-        updated_at: moment().format('MMMM Do YYYY, h:mm:ss a')
+        }
       }
     );
 

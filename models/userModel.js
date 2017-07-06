@@ -12,8 +12,8 @@ var UserSchema = Schema({
     nama_lengkap: {type: String, min: 1, max: 100, required: true},
     jenis_kelamin: {type: String, min: 1, max: 100, required: true}
   },
-  mobile_session: {type: String, min: 0, max: 1000},
-  remember_token: {type: String, min: 0, max: 1000}
+  created_at: { type: Date, default: Date.now},
+  updated_at: { type: Date, default: Date.now}
 },{collection: 'pengguna'});
 
 //Export model
