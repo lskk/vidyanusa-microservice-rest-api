@@ -4,6 +4,7 @@ var async = require('async');
 
 
 exports.daftar_sekolah = function(req,res) {
+
   Sekolah.find()
    .sort([['nama_sekolah', 'ascending']])
    .exec(function (err, schools) {
@@ -12,8 +13,5 @@ exports.daftar_sekolah = function(req,res) {
      res.json({success: true, data: schools})
 
    });
-}
-
-exports.daftar_guru = function(req,res) {
 
 }

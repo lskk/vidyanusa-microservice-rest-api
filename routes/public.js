@@ -10,9 +10,8 @@ var publicController = require('../controllers/publicController');
 router.get('/daftar_sekolah', publicController.daftar_sekolah)
 
 router.group("/kirim", (router) => {
-
+  
     router.post("/status", function(req, res, next) {
-
 
     });
 
