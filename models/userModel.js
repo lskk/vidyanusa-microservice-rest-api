@@ -11,7 +11,7 @@ var UserSchema = Schema({
     username: {type: String, min: 1, max: 100, required: true},
     nama_lengkap: {type: String, min: 1, max: 100, required: true},
     jenis_kelamin: {type: String, min: 1, max: 100, required: true},
-    foto: {type: String, min: 1, max: 100, default: 'http://pasp.org.pk/assets/img/pic.png'},
+    foto: {type: String, min: 1, max: 100, default: 'http://filehosting.pptik.id/Vidyanusa/default-profile-picture.png'},
     bio: {type: String, min: 1, max: 100, default: '-'}
   },
   created_at: { type: Date, default: Date.now},
