@@ -1,4 +1,4 @@
-//Model untuk pengguna sebagai guru
+//Model untuk pengguna sebagai siswa
 var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
@@ -7,8 +7,7 @@ var UserSchema = Schema({
   email: {type: String, min: 1, max: 100, required: true},
   sandi: {type: String, min: 1, max: 100, required: true},
   peran: {type: Number, required: true},
-  sekolah: {type: Schema.ObjectId, ref: 'sekolah'},
-  kelas: [],
+  kelas: {type: Schema.ObjectId, ref: 'kelas'},
   profil:{
     username: {type: String, min: 1, max: 100, required: true},
     nama_lengkap: {type: String, min: 1, max: 100, required: true},
@@ -21,4 +20,4 @@ var UserSchema = Schema({
 },{collection: 'pengguna'});
 
 //Export model
-module.exports = mongoose.model('pengguna', UserSchema);
+module.exports = mongoose.model('penggunaSiswa', UserSchema);

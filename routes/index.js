@@ -19,10 +19,17 @@ router.post('/profil', userController.get_profile)
 
 router.post('/masuk', userController.masuk);
 
+router.group("/android", (router) => {
+    router.post('/masuk', userController.masuk_android);
+    router.post("/daftar/proses/guru", userController.daftar_proses_guru_android);
+    router.post("/daftar/proses/siswa", userController.daftar_proses_siswa_android);    
+});
+
 router.post('/keluar', userController.keluar);
 
 router.group("/daftar/proses", (router) => {
     router.post("/guru", userController.daftar_proses_guru);
+    router.post("/siswa", userController.daftar_proses_siswa);
 });
 
 router.group("/kirim", (router) => {
