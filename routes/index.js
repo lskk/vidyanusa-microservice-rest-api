@@ -29,6 +29,8 @@ router.group("/android", (router) => {
 
 router.post('/keluar', userController.keluar);
 
+router.post('/cek_session', userController.cek_session);
+
 router.group("/poin", (router) => {
     router.post("/tambah", userController.tambah_poin);
 });

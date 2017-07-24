@@ -9,6 +9,9 @@ var Class = require('../models/classModel');
 var async = require('async');
 var moment = require('moment');
 var md5 = require('md5')
+var restClient = require('node-rest-client').Client;
+var rClient = new restClient();
+var base_api_general_url = 'http://localhost:3100';
 
 var salt_password = 'LkywIKIDJk'
 
@@ -1069,42 +1072,78 @@ exports.keluar = function(req,res) {
 }
 
 exports.tambah_poin = function(req, res) {
-  //Inisial validasi
-    req.checkBody('id_pengguna', 'Id pengguna tidak boleh kosong').notEmpty();
-    req.checkBody('jumlah_poin', 'Jumlah poin tidak boleh kosong').notEmpty();
-    req.checkBody('keterangan', 'keterangan tidak boleh kosong').notEmpty();
+  args = {
+    	data: {
+        access_token: req.body.access_token},
+    	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    };
 
-    //Dibersihkan dari Special Character
-    req.sanitize('id_pengguna').escape();
-    req.sanitize('jumlah_poin').escape();
-    req.sanitize('keterangan').escape();
+  //Cek session terlebih dahulu sebelum menambahkan poin
+  rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
 
-    req.sanitize('id_pengguna').trim();
-    req.sanitize('jumlah_poin').trim();
-    req.sanitize('keterangan').trim();
+      if(data.success == true){//session berlaku
 
-    //Menjalankan validasi
-    var errors = req.validationErrors();
+        //Inisial validasi
+        req.checkBody('id_pengguna', 'Id pengguna tidak boleh kosong').notEmpty();
+        req.checkBody('jumlah_poin', 'Jumlah poin tidak boleh kosong').notEmpty();
+        req.checkBody('keterangan', 'keterangan tidak boleh kosong').notEmpty();
 
-    if(errors){//Terjadinya kesalahan
-        return res.json({success: false, data: errors})
-    }else{
+        //Dibersihkan dari Special Character
+        req.sanitize('id_pengguna').escape();
+        req.sanitize('jumlah_poin').escape();
+        req.sanitize('keterangan').escape();
 
-      var inputan = new Poin(
-        {
-          id_pengguna: req.body.id_pengguna,
-          jumlah_poin: req.body.jumlah_poin,
-          keterangan: req.body.keterangan
+        req.sanitize('id_pengguna').trim();
+        req.sanitize('jumlah_poin').trim();
+        req.sanitize('keterangan').trim();
+
+        //Menjalankan validasi
+        var errors = req.validationErrors();
+
+        if(errors){//Terjadinya kesalahan
+            return res.json({success: false, data: errors})
+        }else{
+
+          var inputan = new Poin(
+            {
+              id_pengguna: req.body.id_pengguna,
+              jumlah_poin: req.body.jumlah_poin,
+              keterangan: req.body.keterangan
+            }
+          );
+
+          inputan.save(function(err){
+            if (err) {
+              return res.json({success: false, data: {message:err}})
+            } else {
+              return res.json({success: true, data: {message:'Poin berhasil ditambahkan.'}})
+            }
+          })
+
         }
-      );
 
-      inputan.save(function(err){
-        if (err) {
-          return res.json({success: false, data: {pesan:err}})
-        } else {
-          return res.json({success: true, data: {message:'Poin berhasil ditambahkan.'}})
-        }
-      })
 
-    }
+      }else{//session tidak berlaku
+        //console.log('Session Tidak Berlaku:'+JSON.stringify())
+        return res.json({success: false, data: {message:data.data.message}})
+
+      }
+
+  });
+
+}
+
+exports.cek_session = function(req, res) {
+
+  Session.find({'access_token':req.body.access_token,'end_at':null})
+   .exec(function (err, results) {
+
+     if(results.length == 0){//Sudah expired akses tokennya
+       return res.json({success: false, data: {message:'Token tidak ditemukan atau sudah tidak berlaku.'}})
+     }else if(results.length == 1){
+       return res.json({success: true, data: {message:'Token berlaku.'}})
+     }
+
+   });
+
 }
