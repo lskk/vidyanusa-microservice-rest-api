@@ -29,6 +29,10 @@ router.group("/android", (router) => {
 
 router.post('/keluar', userController.keluar);
 
+router.group("/poin", (router) => {
+    router.post("/tambah", userController.tambah_poin);
+});
+
 router.group("/daftar/proses", (router) => {
     router.post("/guru", userController.daftar_proses_guru);
     router.post("/siswa", userController.daftar_proses_siswa);

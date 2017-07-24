@@ -1,5 +1,6 @@
 //Import model
 var User = require('../models/userModel');//user guru
+var Poin = require('../models/poinModel');
 var UserSiswa = require('../models/userModelSiswa');//user siswa
 var Session = require('../models/sessionModel');
 var Class = require('../models/classModel');
@@ -1065,4 +1066,45 @@ exports.keluar = function(req,res) {
   }
 
 
+}
+
+exports.tambah_poin = function(req, res) {
+  //Inisial validasi
+    req.checkBody('id_pengguna', 'Id pengguna tidak boleh kosong').notEmpty();
+    req.checkBody('jumlah_poin', 'Jumlah poin tidak boleh kosong').notEmpty();
+    req.checkBody('keterangan', 'keterangan tidak boleh kosong').notEmpty();
+
+    //Dibersihkan dari Special Character
+    req.sanitize('id_pengguna').escape();
+    req.sanitize('jumlah_poin').escape();
+    req.sanitize('keterangan').escape();
+
+    req.sanitize('id_pengguna').trim();
+    req.sanitize('jumlah_poin').trim();
+    req.sanitize('keterangan').trim();
+
+    //Menjalankan validasi
+    var errors = req.validationErrors();
+
+    if(errors){//Terjadinya kesalahan
+        return res.json({success: false, data: errors})
+    }else{
+
+      var inputan = new Poin(
+        {
+          id_pengguna: req.body.id_pengguna,
+          jumlah_poin: req.body.jumlah_poin,
+          keterangan: req.body.keterangan
+        }
+      );
+
+      inputan.save(function(err){
+        if (err) {
+          return res.json({success: false, data: {pesan:err}})
+        } else {
+          return res.json({success: true, data: {message:'Poin berhasil ditambahkan.'}})
+        }
+      })
+
+    }
 }
