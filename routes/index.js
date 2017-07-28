@@ -20,7 +20,6 @@ router.post('/profil', userController.get_profile)
 
 router.post('/masuk', userController.masuk);
 
-
 router.group("/android", (router) => {
     router.post('/masuk', userController.masuk_android);
     router.post("/daftar/proses/guru", userController.daftar_proses_guru_android);
