@@ -1133,6 +1133,22 @@ exports.tambah_poin = function(req, res) {
 
 }
 
+exports.daftar_poin = function(req, res) {
+
+  if(req.body.id_pengguna == null || req.body.id_pengguna == ''){
+    return res.json({success: false, data: {message:'Param id pengguna tidak boleh kosong.'}})
+  }else{
+
+    Poin.find({'id_pengguna':req.body.id_pengguna})
+     .sort([['created_at', 'descending']])
+     .exec(function (err, results) {
+       return res.json({success: true, data: results})
+     })
+
+  }
+
+}
+
 exports.cek_session = function(req, res) {
 
   Session.find({'access_token':req.body.access_token,'end_at':null})

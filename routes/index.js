@@ -32,6 +32,7 @@ router.post('/cek_session', userController.cek_session);
 
 router.group("/poin", (router) => {
     router.post("/tambah", userController.tambah_poin);
+    router.post("/daftar", userController.daftar_poin);
 });
 
 router.group("/daftar/proses", (router) => {
