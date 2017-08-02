@@ -15,6 +15,7 @@ var UserSchema = Schema({
     foto: {type: String, min: 1, max: 100, default: 'http://filehosting.pptik.id/TESISS2ITB/Vidyanusa/default-profile-picture.png'},
     bio: {type: String, min: 1, max: 100, default: '-'}
   },
+  prestasi: [],
   created_at: { type: Date, default: Date.now},
   updated_at: { type: Date, default: Date.now}
 },{collection: 'pengguna'});
