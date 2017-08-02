@@ -11,7 +11,7 @@ var moment = require('moment');
 var md5 = require('md5')
 var restClient = require('node-rest-client').Client;
 var rClient = new restClient();
-var base_api_general_url = 'http://localhost:3100';
+var base_api_general_url = 'http://localhost:3200';
 
 var salt_password = 'LkywIKIDJk'
 
@@ -1099,7 +1099,7 @@ exports.tambah_poin = function(req, res) {
 
       }else{//session tidak berlaku
         //console.log('Session Tidak Berlaku:'+JSON.stringify())
-        return res.json({success: false, data: {message:data.data.message}})
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
 
       }
 
