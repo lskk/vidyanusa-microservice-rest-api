@@ -11,7 +11,7 @@ var moment = require('moment');
 var md5 = require('md5')
 var restClient = require('node-rest-client').Client;
 var rClient = new restClient();
-var base_api_general_url = 'http://localhost:3200';
+var base_api_general_url = 'http://apigeneral.vidyanusa.id';
 
 var salt_password = 'LkywIKIDJk'
 

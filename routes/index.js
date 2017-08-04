@@ -7,10 +7,24 @@ require('express-group-routes');
 
 var userController = require('../controllers/userController');
 var mapelController = require('../controllers/mapelController');
+var publicController = require('../controllers/publicController');
 
-router.get('/daftar_sekolah', function(req, res, next) {
-  res.redirect('/public/daftar_sekolah');
-});
+
+
+router.group("/daftar_sekolah", (router) => {
+  router.get('/', function(req, res, next) {
+    res.redirect('/public/daftar_sekolah');
+  });
+  router.post('/pengguna', publicController.daftar_sekolah_pengguna);
+
+})
+
+router.group("/daftar_kelas", (router) => {
+    router.post('/', publicController.daftar_kelas);
+    router.post('/detail', publicController.kelas_detail);
+    router.post('/ubah_nama', publicController.kelas_detail_ubah_nama);
+})
+
 
 router.get('/daftar_kegiatan', function(req, res, next) {
 
