@@ -19,6 +19,10 @@ router.group("/daftar_sekolah", (router) => {
 
 })
 
+router.group("/pengguna", (router) => {
+  router.post('/guru/sekolah', publicController.pengguna_guru_sekolah);
+})
+
 router.group("/daftar_kelas", (router) => {
     router.post('/', publicController.daftar_kelas);
     router.post('/detail', publicController.kelas_detail);

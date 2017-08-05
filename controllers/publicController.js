@@ -116,6 +116,53 @@ exports.daftar_kelas = function(req,res,next) {
 
 }
 
+exports.pengguna_guru_sekolah = function(req,res,next) {
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+  req.checkBody('id_sekolah', 'Id sekolah tidak boleh kosong').notEmpty();
+
+  req.sanitize('access_token').escape();
+  req.sanitize('id_sekolah').escape();
+
+  req.sanitize('access_token').trim();
+  req.sanitize('id_sekolah').trim();
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else{
+
+    args = {
+      	data: {
+          access_token: req.body.access_token},
+      	  headers: { 'Content-Type': 'application/x-www-form-urlencoded'}
+      };
+
+    rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+
+      if(data.success == true){//session berlaku
+
+        var idSekolah = req.body.id_sekolah
+
+        Pengguna.find({'peran':4,'sekolah':idSekolah})
+         .sort([['profil.nama_lengkap', 'ascending']])
+         .exec(function (err, teachers) {
+           if (err) { return next(err); }
+
+           res.json({success: true, data: teachers})
+
+         });
+
+      }else{//session tidak berlaku
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
+      }
+
+    })
+
+  }
+
+}
+
 exports.kelas_detail = function(req,res,next) {
 
   req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
