@@ -28,6 +28,7 @@ router.group("/daftar_kelas", (router) => {
     router.post('/detail', publicController.kelas_detail);
     router.post('/ubah_nama', publicController.kelas_detail_ubah_nama);
     router.post('/ubah_mapel', publicController.kelas_detail_ubah_mapel);
+    router.post('/ubah_guru', publicController.kelas_detail_ubah_guru);
 })
 
 

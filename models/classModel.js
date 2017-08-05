@@ -7,7 +7,12 @@ var ClassSchema = Schema({
   kode_kelas: {type: String, min: 1, max: 100, required: true},
   sekolah: {type: Schema.ObjectId, ref: 'sekolah'},
   mapel: [{type: Schema.ObjectId, ref: 'mapel'}],
-  guru: [{type: Schema.ObjectId, ref: 'pengguna'}],
+  pengajar: [
+          {
+            guru:{type: Schema.ObjectId, ref: 'pengguna'},
+            mapel:{type: Schema.ObjectId, ref: 'mapel'}
+          }
+        ],
   keterangan: {type: String, min: 1, max: 100, required: true}
 },{collection: 'kelas'});
 
