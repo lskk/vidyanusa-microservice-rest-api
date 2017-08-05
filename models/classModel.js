@@ -4,8 +4,7 @@ var Schema = mongoose.Schema;
 
 var ClassSchema = Schema({
   nama_kelas: {type: String, min: 1, max: 100, required: true},
-  kode_kelas: {type: String, min: 1, max: 100, required: true},
-  sekolah: {type: Schema.ObjectId, ref: 'sekolah'},
+  sekolah: {type: Schema.ObjectId, ref: 'sekolah', required: true},
   mapel: [{type: Schema.ObjectId, ref: 'mapel'}],
   pengajar: [
           {
@@ -13,7 +12,8 @@ var ClassSchema = Schema({
             mapel:{type: Schema.ObjectId, ref: 'mapel'}
           }
         ],
-  keterangan: {type: String, min: 1, max: 100, required: true}
+  created_at: { type: Date, default: Date.now},
+  updated_at: { type: Date, default: Date.now}
 },{collection: 'kelas'});
 
 //Export model

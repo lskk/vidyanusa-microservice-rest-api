@@ -116,6 +116,62 @@ exports.daftar_kelas = function(req,res,next) {
 
 }
 
+exports.tambah_kelas = function(req,res,next){
+
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+  req.checkBody('nama_kelas', 'Nama kelas tidak boleh kosong').notEmpty();
+  req.checkBody('sekolah', 'Id sekolah tidak boleh kosong').notEmpty();
+
+  req.sanitize('access_token').escape();
+  req.sanitize('nama_kelas').escape();
+  req.sanitize('sekolah').escape();
+
+  req.sanitize('access_token').trim();
+  req.sanitize('nama_kelas').trim();
+  req.sanitize('sekolah').trim();
+
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else{
+    //cek session
+    args = {
+        data: {
+          access_token: req.body.access_token},
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      };
+
+    rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+      if(data.success == true){//session berlaku
+
+        //Fungsi tambah kelas
+        var inputan = new Kelas(
+          {
+            nama_kelas: req.body.nama_kelas,
+            sekolah: req.body.sekolah
+          }
+        );
+
+        inputan.save(function(err){
+          if (err) {
+            return res.json({success: false, data: {message:err}})
+          } else {
+            return res.json({success: true, data: {message:'Kelas berhasil ditambahkan'}})
+          }
+        })
+
+
+      }else{//session tidak berlaku
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
+      }
+    })
+
+  }
+
+}
+
 exports.pengguna_guru_sekolah = function(req,res,next) {
   req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
   req.checkBody('id_sekolah', 'Id sekolah tidak boleh kosong').notEmpty();
@@ -194,7 +250,8 @@ exports.kelas_detail = function(req,res,next) {
 
         Kelas.find({'_id':idKelas})
          .populate('mapel','nama_mapel')
-         .populate('guru','profil.nama_lengkap')
+         .populate('pengajar.guru','profil.nama_lengkap')
+         .populate('pengajar.mapel','nama_mapel')
          .exec(function (err, clasess) {
            if (err) { return next(err); }
 
