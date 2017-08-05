@@ -457,7 +457,21 @@ exports.kelas_detail_ubah_guru = function(req,res,next) {
               if(err){
                return res.json({success: false, data: {message:err}})
              }else{
-               return res.json({success: true, data: {message:'Berhasil menambahkan guru ke kelas.'}})
+               //Menambahkan mapel dan kelas ke guru
+               var kelasMapel = { kelas: idKelas, mapel: idMapel }
+
+               Pengguna.update(
+                 { _id: idGuru },
+                 { $push: { mengajar: kelasMapel } }
+               ).exec(function(err, results) {
+                 if(err){
+                   return res.json({success: false, data: {message:err}})
+                 }else{
+                   return res.json({success: true, data: {message:'Berhasil menambahkan guru ke kelas.'}})
+                 }
+               })
+
+
              }
             })
 
