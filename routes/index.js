@@ -36,6 +36,7 @@ router.group("/daftar_kelas", (router) => {
 router.group("/pengaturan", (router) => {
     router.post('/siswa/kelas/tambah', userController.siswa_kelas_tambah);
     router.post('/siswa/prestasi/tambah', userController.siswa_prestasi_tambah);
+    router.post('/siswa/profil/ubah', userController.siswa_profil_ubah);
 })
 
 
