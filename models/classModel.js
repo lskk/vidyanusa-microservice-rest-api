@@ -5,7 +5,8 @@ var Schema = mongoose.Schema;
 var ClassSchema = Schema({
   nama_kelas: {type: String, min: 1, max: 100, required: true},
   sekolah: {type: Schema.ObjectId, ref: 'sekolah', required: true},
-  mapel: [{type: Schema.ObjectId, ref: 'mapel'}],
+  kode: {type: String, min: 1, max: 100, required: true},
+  mapel: [{type: Schema.ObjectId, ref: 'mapel'}],  
   pengajar: [
           {
             guru:{type: Schema.ObjectId, ref: 'pengguna'},

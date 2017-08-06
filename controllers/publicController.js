@@ -7,6 +7,16 @@ var restClient = require('node-rest-client').Client;
 var rClient = new restClient();
 var base_api_general_url = 'http://apigeneral.vidyanusa.id';
 
+function randomKodeKelas() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 10; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+}
+
 exports.daftar_sekolah = function(req,res,next) {
 
   Sekolah.find()
@@ -116,6 +126,58 @@ exports.daftar_kelas = function(req,res,next) {
 
 }
 
+exports.daftar_kelas_guru = function(req,res,next) {
+
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+  req.checkBody('pengguna', 'Id pengguna tidak boleh kosong').notEmpty();
+
+  req.sanitize('access_token').escape();
+  req.sanitize('pengguna').escape();
+
+
+  req.sanitize('access_token').trim();
+  req.sanitize('pengguna').trim();
+
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else{
+    args = {
+      	data: {
+          access_token: req.body.access_token},
+      	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      };
+
+    rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+      if(data.success == true){//session berlaku
+
+        var idPengguna = req.body.pengguna
+
+        Pengguna.find({'_id':idPengguna})
+         .select('mengajar')
+         .populate('mengajar.kelas','nama_kelas')
+         .populate('mengajar.mapel','nama_mapel')
+         .exec(function (err, clasess) {
+           if (err) { return next(err); }
+
+           res.json({success: true, data: clasess})
+
+         });
+
+      }else{//session tidak berlaku
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
+      }
+
+
+    })
+
+  }
+
+
+}
+
 exports.tambah_kelas = function(req,res,next){
 
   req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
@@ -145,12 +207,13 @@ exports.tambah_kelas = function(req,res,next){
 
     rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
       if(data.success == true){//session berlaku
-
+        var generateKodeKelas = randomKodeKelas()
         //Fungsi tambah kelas
         var inputan = new Kelas(
           {
             nama_kelas: req.body.nama_kelas,
-            sekolah: req.body.sekolah
+            sekolah: req.body.sekolah,
+            kode: generateKodeKelas
           }
         );
 

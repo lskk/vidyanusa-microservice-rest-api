@@ -8,7 +8,12 @@ var UserSchema = Schema({
   sandi: {type: String, min: 1, max: 100, required: true},
   peran: {type: Number, required: true},
   sekolah: {type: Schema.ObjectId, ref: 'sekolah'},
-  mengajar: [],
+  mengajar: [
+    {
+      kelas:{type: Schema.ObjectId, ref: 'kelas'},
+      mapel:{type: Schema.ObjectId, ref: 'mapel'}
+    }
+  ],
   profil:{
     username: {type: String, min: 1, max: 100, required: true},
     nama_lengkap: {type: String, min: 1, max: 100, required: true},
