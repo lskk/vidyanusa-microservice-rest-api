@@ -33,12 +33,18 @@ router.group("/daftar_kelas", (router) => {
     router.post('/ubah_guru', publicController.kelas_detail_ubah_guru);
 })
 
+router.group("/pengaturan", (router) => {
+    router.post('/siswa/kelas/tambah', userController.siswa_kelas_tambah);
+    router.post('/siswa/prestasi/tambah', userController.siswa_prestasi_tambah);
+})
+
 
 router.get('/daftar_kegiatan', function(req, res, next) {
 
 });
 
 router.post('/profil', userController.get_profile)
+router.post('/profil/siswa', userController.get_profile_siswa)
 
 router.post('/masuk', userController.masuk);
 

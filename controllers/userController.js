@@ -1028,6 +1028,68 @@ exports.get_profile = function(req,res,next) {
 
 }
 
+exports.get_profile_siswa = function(req,res,next) {
+
+  if(req.body.username == '' || req.body.access_token == '' || req.body.username == null || req.body.access_token == null){
+    return res.json({success: false, data: {message:'Username atau akses token tidak boleh kosong'}})
+  }else{
+
+    UserSiswa.find({'profil.username':req.body.username})//inputan.username
+    .populate('kelas','nama_kelas')
+    .exec(function (err, results) {
+      var expire = false
+      //Mengatur alur REST
+      async.series({
+          one: function(callback) {
+
+            setTimeout(function() {
+              //Mencek apakah access token yang dimiliki pengguna masih berlaku
+              Session.find({'access_token':req.body.access_token,'end_at':null})
+               .exec(function (err, results) {
+
+
+                 if(results.length == 0){//Sudah expired akses tokennya
+                   expire = true;
+                   console.log('Status expire jadi:'+expire)
+                 }
+
+               });
+              callback(null, 1);
+            }, 1000);
+
+
+          },
+          two: function(callback){
+
+            setTimeout(function() {
+              if (err) {
+                return res.json({success: false, data: err})
+              }else{
+                console.log('Status expire jadinya:'+expire)
+                if(expire == true){
+                  return res.json({success: false, data: {message:'Akses token sudah expired atau tidak ditemukan'}})
+                }else if(expire == false){
+                  if(results.length == 0){
+                    return res.json({success: false,data:{message:'Data profil tidak ditemukan'}})
+                  }else{
+                    return res.json({success: true, data: results, expire: expire})
+                  }
+                }
+              }
+              callback(null, 2);
+            }, 1000);
+
+          }
+      }, function(err, results) {
+
+      })
+
+    });
+
+  }
+
+}
+
 exports.keluar = function(req,res) {
   if(req.body.access_token == null){
     return res.json({success:false,message:'Parameter akses token tidak boleh kosong'})
@@ -1135,5 +1197,129 @@ exports.cek_session = function(req, res) {
      }
 
    });
+
+}
+
+exports.siswa_kelas_tambah = function(req,res) {
+
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+  req.checkBody('kode_kelas', 'Kode kelas tidak boleh kosong').notEmpty();
+  req.checkBody('pengguna', 'Id pengguna tidak boleh kosong').notEmpty();
+
+  req.sanitize('access_token').escape();
+  req.sanitize('kode_kelas').escape();
+  req.sanitize('pengguna').escape();
+
+  req.sanitize('access_token').trim();
+  req.sanitize('kode_kelas').trim();
+  req.sanitize('pengguna').trim();
+
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else{
+
+    args = {
+        data: {
+          access_token: req.body.access_token},
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      };
+
+    rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+      if(data.success == true){//session berlaku
+
+        //Mencari kelas berdasarkan kodenya
+        Class.find({ kode:req.body.kode_kelas}).exec(function (err, results) {
+
+          var count = results.length
+          if(count > 0){
+            var idKelasKembalian = results[0]._id
+            //Mencek apakah siswa sudah terdaftar dikelas yang akan ditambahkan
+            UserSiswa.find({ _id:req.body.pengguna , kelas: idKelasKembalian}).exec(function (err, results) {
+
+              var count = results.length
+              if(count > 0){//Siswa sudah memiliki kelas yang dituju
+                return res.json({success: false, data: {message:'Gagal menambahkan kelas. Anda sudah terdaftar di kelas yang anda tuju.'}})
+              }else{
+                UserSiswa.update(
+                    { _id: req.body.pengguna },
+                    { $push: { kelas: idKelasKembalian } }
+                ).exec(function (err, results) {
+                  if(err){
+                   return res.json({success: false, data: {message:err}})
+                 }else{
+                   return res.json({success: true, data: {message:'Kelas berhasil ditambahkan'}})
+                 }
+                })
+              }
+            })
+
+          }else if(count == 0){
+            return res.json({success: false, data: {message:'Gagal menambahkan menambahkan kelas, kelas tidak ditemukan.'}})
+          }
+
+        })
+
+
+      }else{//session tidak berlaku
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
+      }
+    })
+
+  }
+
+}
+
+exports.siswa_prestasi_tambah = function(req,res) {
+
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+  req.checkBody('prestasi', 'Prestasi tidak boleh kosong').notEmpty();
+  req.checkBody('pengguna', 'Id pengguna tidak boleh kosong').notEmpty();
+
+  req.sanitize('access_token').escape();
+  req.sanitize('prestasi').escape();
+  req.sanitize('pengguna').escape();
+
+  req.sanitize('access_token').trim();
+  req.sanitize('prestasi').trim();
+  req.sanitize('pengguna').trim();
+
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else{
+
+    args = {
+        data: {
+          access_token: req.body.access_token},
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      };
+
+    rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+      if(data.success == true){//session berlaku
+
+        //Menambahkan prestasi
+        UserSiswa.update(
+            { _id: req.body.pengguna },
+            { $push: { prestasi: req.body.prestasi } }
+        ).exec(function (err, results) {
+          if(err){
+           return res.json({success: false, data: {message:err}})
+         }else{
+           return res.json({success: true, data: {message:'Berhasil menambahkan prestasi.'}})
+         }
+        })
+
+
+      }else{//session tidak berlaku
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
+      }
+    })
+
+  }
 
 }
