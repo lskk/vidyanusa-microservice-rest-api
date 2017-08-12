@@ -8,7 +8,7 @@ require('express-group-routes');
 var userController = require('../controllers/userController');
 var mapelController = require('../controllers/mapelController');
 var publicController = require('../controllers/publicController');
-
+var logController = require('../controllers/logController');
 
 
 router.group("/daftar_sekolah", (router) => {
@@ -78,6 +78,12 @@ router.group("/kirim", (router) => {
     router.post("/status", function(req, res, next) {
 
     });
+});
+
+router.group("/log", (router) => {
+    router.get("/", logController.daftar_logs);         //lihat daftar semua log
+    router.post("/tambah", logController.post_log);     //menambah log
+    router.post("/id", logController.daftar_log_id);    //lihat daftar log by id
 });
 
 module.exports = router;
