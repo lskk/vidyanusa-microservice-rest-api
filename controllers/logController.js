@@ -73,13 +73,13 @@ exports.daftar_logs = function(req,res) {
       
     logs.find({})
     .sort([['created_at', 'descending']])
-    .populate({ path: 'pengguna', select: 'profil.username' })
+    .populate({ path: 'pengguna', select: 'profil.username profil.foto' })
    
     .exec(function (err, results) {
       if (err) {
        return res.json({success: false, data: err})
       }else{
-       return res.json({success: true, data: results})
+       return res.json({success: true, data: results}) 
       }
 
     });
@@ -90,7 +90,7 @@ exports.daftar_log_id = function(req,res) {
       
     logs.find({'pengguna':req.body.id})
     .sort([['created_at', 'descending']])
-    .populate({ path: 'pengguna', select: 'profil.username' })
+    .populate({ path: 'pengguna', select: 'profil.username profil.foto' })
    
     .exec(function (err, results) {
       if (err) {
