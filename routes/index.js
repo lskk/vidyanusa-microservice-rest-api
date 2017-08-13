@@ -38,6 +38,8 @@ router.group("/pengaturan", (router) => {
     router.post('/siswa/prestasi/tambah', userController.siswa_prestasi_tambah);
     router.post('/siswa/profil/ubah', userController.siswa_profil_ubah);
     router.post('/siswa/foto_profil/ubah', userController.siswa_foto_profil_ubah);
+    router.post('/guru/profil/ubah', userController.guru_profil_ubah);
+    router.post('/guru/foto_profil/ubah', userController.guru_foto_profil_ubah);
 })
 
 
