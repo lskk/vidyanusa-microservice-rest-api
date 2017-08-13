@@ -1376,3 +1376,48 @@ exports.siswa_profil_ubah = function(req,res) {
   }
 
 }
+
+exports.siswa_foto_profil_ubah = function(req,res) {
+
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+  req.checkBody('alamat_url_foto', 'Alamat url foto tidak boleh kosong').notEmpty();
+
+  req.sanitize('access_token').escape();
+
+  req.sanitize('access_token').trim();
+
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else{
+
+    args = {
+        data: {
+          access_token: req.body.access_token},
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      };
+
+    rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+      if(data.success == true){//session berlaku
+
+        //Mengubah data nama lengkap dan bio
+        UserSiswa.update({ _id: req.body.pengguna }, { $set: { 'profil.foto': req.body.alamat_url_foto }})
+         .exec(function (err, results) {
+             if (err) {
+               return res.json({success:false, data: {message:err}})
+             }else{
+               return res.json({success:true, data: {message:'Foto profil berhasil diperbaharui.'}})
+             }
+         })
+
+
+      }else{//session tidak berlaku
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
+      }
+    })
+
+  }
+
+}
