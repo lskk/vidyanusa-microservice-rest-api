@@ -1,5 +1,6 @@
 //Import model
-var Pengguna = require('../models/userModel');
+var Pengguna = require('../models/userModel');//guru
+var PenggunaSiswa = require('../models/userModelSiswa');//siswa
 var Sekolah = require('../models/schoolModel');
 var Kelas = require('../models/classModel');
 var async = require('async');
@@ -107,6 +108,54 @@ exports.daftar_kelas = function(req,res,next) {
          .sort([['created_at', 'descending']])
          .populate('sekolah','nama_sekolah')
          .populate('mapel','nama_mapel')
+         .exec(function (err, clasess) {
+           if (err) { return next(err); }
+
+           res.json({success: true, data: clasess})
+
+         });
+
+      }else{//session tidak berlaku
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
+      }
+
+
+    })
+
+  }
+
+
+}
+
+exports.daftar_kelas_siswa = function(req,res,next) {
+
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+  req.checkBody('kelas', 'Kelas tidak boleh kosong').notEmpty();
+
+  req.sanitize('access_token').escape();
+  req.sanitize('kelas').escape();
+
+  req.sanitize('access_token').trim();
+  req.sanitize('kelas').trim();
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else{
+    args = {
+      	data: {
+          access_token: req.body.access_token},
+      	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      };
+
+    rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+      if(data.success == true){//session berlaku
+
+
+
+        PenggunaSiswa.find({kelas: req.body.kelas,peran:3})
+         .select('profil.username profil.nama_lengkap profil.foto kelas')
          .exec(function (err, clasess) {
            if (err) { return next(err); }
 
