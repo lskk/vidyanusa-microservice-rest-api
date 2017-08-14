@@ -63,6 +63,8 @@ router.post('/keluar', userController.keluar);
 
 router.post('/cek_session', userController.cek_session);
 
+router.post('/pemilik_token', userController.pemilik_token);
+
 router.group("/poin", (router) => {
     router.post("/tambah", userController.tambah_poin);
     router.post("/daftar", userController.daftar_poin);

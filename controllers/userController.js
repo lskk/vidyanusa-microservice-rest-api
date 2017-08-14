@@ -1208,6 +1208,42 @@ exports.cek_session = function(req, res) {
 
 }
 
+exports.pemilik_token = function(req, res) {
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+
+  req.sanitize('access_token').escape();
+
+  req.sanitize('access_token').trim();
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else {
+    Session.find({'access_token':req.body.access_token,'end_at':null})
+     .exec(function (err, results) {
+
+       if(results.length == 0){//Cek token terdaftar atau tidak
+         return res.json({success: false, data: {message:'Token tidak ditemukan atau sudah tidak berlaku.'}})
+       }else if(results.length == 1){
+
+         //Menguraikan data session dan penggunanya
+         Session.find({'access_token':req.body.access_token,'end_at':null})
+          .populate('user_id')
+          .select({'user_id':1})
+          .exec(function (err, results) {
+            return res.json({success: true, data: results})
+          })
+
+       }
+
+     });
+  }
+
+
+
+}
+
 exports.siswa_kelas_tambah = function(req,res) {
 
   req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
