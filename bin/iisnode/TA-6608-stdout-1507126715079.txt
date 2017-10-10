@@ -1,0 +1,4 @@
+[0mPOST /profil_porto [32m200 [0m615.539 ms - 66[0m
+[0mPOST /profil_porto [32m200 [0m416.115 ms - 66[0m
+[0mPOST /cek_session [32m200 [0m426.186 ms - 86[0m
+[0mPOST /cek_session [32m200 [0m552.231 ms - 86[0m

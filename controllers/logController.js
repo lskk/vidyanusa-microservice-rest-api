@@ -11,14 +11,6 @@ var async = require('async');
 var moment = require('moment');
 var restClient = require('node-rest-client').Client;
 var rClient = new restClient();
-// var rClient = new restClient({
-//   proxy:{
-//             host:"",
-//             port: ,
-//             user:"",
-//             password:""
-//         }
-// });
 
 var base_api_general_url = 'http://apigeneral.vidyanusa.id'
 
@@ -29,7 +21,7 @@ exports.post_log = function(req,res){
     req.checkBody('id_pengguna', 'Id_pengguna tidak boleh kosong ').notEmpty();
     req.checkBody('tipe', 'Tipe tidak boleh kosong isi dengan angka 1.LMS 2.Forum 3.Game 4.Portal 5.Blog').notEmpty();
     req.checkBody('judul', 'judul tidak boleh kosong').notEmpty();
-
+    
     req.sanitize('access_token').escape();
     req.sanitize('access_token').trim();
 
@@ -58,7 +50,7 @@ exports.post_log = function(req,res){
             judul:req.body.judul,
             link:req.body.link
             })
-
+                            
           inputan_log.save(function (err){
             if (err) {
               console.log('Terjadi error di input log')
@@ -68,7 +60,7 @@ exports.post_log = function(req,res){
               return res.json({success: true, data: {message:'Log anda berhasil di tambahkan.'}})
             }
           })
-
+  	  
        }else{//sessio tidak berlaku
         return res.json({success: false, data: {message:data.data.message}})
       }
@@ -78,16 +70,16 @@ exports.post_log = function(req,res){
 }
 
 exports.daftar_logs = function(req,res) {
-
+      
     logs.find({})
     .sort([['created_at', 'descending']])
     .populate({ path: 'pengguna', select: 'profil.username profil.foto' })
-
+   
     .exec(function (err, results) {
       if (err) {
        return res.json({success: false, data: err})
       }else{
-       return res.json({success: true, data: results})
+       return res.json({success: true, data: results}) 
       }
 
     });
@@ -95,11 +87,11 @@ exports.daftar_logs = function(req,res) {
 }
 
 exports.daftar_log_id = function(req,res) {
-
+      
     logs.find({'pengguna':req.body.id})
     .sort([['created_at', 'descending']])
     .populate({ path: 'pengguna', select: 'profil.username profil.foto' })
-
+   
     .exec(function (err, results) {
       if (err) {
        return res.json({success: false, data: err})
@@ -110,3 +102,30 @@ exports.daftar_log_id = function(req,res) {
     });
 
 }
+
+exports.daftar_log_user = function(req,res) {
+      
+  User.find({ 'profil.username' : req.body.username  })
+  .lean()
+  .distinct('_id')
+  .exec((err, userIds) => {
+    if (userIds.length == 0) { 
+      return res.json({success: false, message: 'Username tidak terdaftar'})
+    }
+      logs.find({ pengguna: { $all: userIds} })
+      .sort([['created_at', 'descending']])
+      .populate({ path: 'pengguna', select: 'profil.username profil.foto' })
+   
+      .exec(function (err, results) {
+        if (err) {
+         return res.json({success: false, data: err})
+        }else{
+         return res.json({success: true, data: results})
+        }
+
+      });
+     
+  });
+
+}
+

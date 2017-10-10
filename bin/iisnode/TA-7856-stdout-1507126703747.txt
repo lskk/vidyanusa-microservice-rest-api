@@ -1,0 +1,6 @@
+[0mGET / [33m404 [0m28.561 ms - 2416[0m
+[0mGET / [33m404 [0m45.739 ms - 2416[0m
+[0mPOST /profil_porto [32m200 [0m77.732 ms - 66[0m
+[0mPOST /profil_porto [32m200 [0m8.654 ms - 66[0m
+[0mPOST /profil_porto [32m200 [0m4.440 ms - 66[0m
+[0mPOST /profil_porto [32m200 [0m4.009 ms - 66[0m

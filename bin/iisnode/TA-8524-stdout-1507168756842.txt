@@ -1,0 +1,3 @@
+[0mPOST /poin/daftar [32m200 [0m345.264 ms - 2395[0m
+[0mPOST /poin/daftar [32m200 [0m539.112 ms - 2395[0m
+[0mPOST /poin/daftar [32m200 [0m295.374 ms - 2395[0m

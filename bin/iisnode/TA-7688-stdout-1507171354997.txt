@@ -1,0 +1,4 @@
+[0mGET /mapel [32m200 [0m537.756 ms - 153[0m
+[0mGET /log [32m200 [0m656.872 ms - 67760[0m
+Status expire jadinya:false
+[0mPOST /profil [32m200 [0m2399.157 ms - 458[0m

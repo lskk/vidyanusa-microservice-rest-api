@@ -292,6 +292,53 @@ exports.tambah_kelas = function(req,res,next){
 
 }
 
+exports.pengguna_siswa_sekolah = function(req,res,next) {
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+
+
+  req.sanitize('access_token').escape();
+
+
+  req.sanitize('access_token').trim();
+
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else{
+
+    args = {
+      	data: {
+          access_token: req.body.access_token},
+      	  headers: { 'Content-Type': 'application/x-www-form-urlencoded'}
+      };
+
+    rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+
+      if(data.success == true){//session berlaku
+
+        var idSekolah = req.body.id_sekolah
+
+        Pengguna.find({'peran':3})
+         .sort([['profil.nama_lengkap', 'ascending']])
+         .exec(function (err, teachers) {
+           if (err) { return next(err); }
+
+           res.json({success: true, data: teachers})
+
+         });
+
+      }else{//session tidak berlaku
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
+      }
+
+    })
+
+  }
+
+}
+
 exports.pengguna_guru_sekolah = function(req,res,next) {
   req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
   req.checkBody('id_sekolah', 'Id sekolah tidak boleh kosong').notEmpty();
@@ -491,6 +538,7 @@ exports.kelas_detail_ubah_mapel = function(req,res,next) {
             return res.json({success: false, data: {message:'Gagal menambahkan mata pelajaran karena sudah terdaftar di kelas.'}})
           }else if(count == 0){//Mapel belum terdaftar di kelas
             //Menambahkan mapel ke kelas
+
             Kelas.update(
                 { _id: idKelas },
                 { $push: { mapel: idMapel } }
@@ -499,6 +547,85 @@ exports.kelas_detail_ubah_mapel = function(req,res,next) {
                return res.json({success: false, data: {message:err}})
              }else{
                return res.json({success: true, data: {message:'Berhasil menambahkan mata pelajaran.'}})
+             }
+            })
+
+
+          }
+
+        })
+
+
+      }else{//session tidak berlaku
+        return res.json({success: false, data: {message:'Token tidak berlaku'}})
+      }
+
+
+    })
+
+  }
+
+
+}
+
+exports.kelas_detail_ubah_siswa = function(req,res,next) {
+
+  req.checkBody('access_token', 'Akses token tidak boleh kosong').notEmpty();
+  req.checkBody('kelas', 'Id kelas tidak boleh kosong').notEmpty();
+  req.checkBody('siswa', 'Id siswa tidak boleh kosong').notEmpty();
+
+
+  req.sanitize('access_token').escape();
+  req.sanitize('kelas').escape();
+  req.sanitize('siswa').escape();
+
+
+  req.sanitize('access_token').trim();
+  req.sanitize('kelas').trim();
+  req.sanitize('siswa').trim();
+
+
+
+  var errors = req.validationErrors();
+
+  if(errors){//Terjadinya kesalahan
+      return res.json({success: false, data: errors})
+  }else{
+    args = {
+      	data: {
+          access_token: req.body.access_token},
+      	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      };
+
+    rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+      if(data.success == true){//session berlaku
+        var idKelas = req.body.kelas
+        var idSiswa = req.body.siswa
+
+        //Proses:
+        //1. Dicek dahulu apakah siswa sudah terdaftar dalam kelas
+        //2. Apabila sudah maka gagal menambahkan kelas
+        //3. Apabila belum berhasil menambahkan kelas
+        PenggunaSiswa.find({ _id:idSiswa , kelas: idKelas }).exec(function (err, results) {
+
+          var count = results.length
+          if(count > 0){//Siswa sudah terdaftar di dalam kelas
+            return res.json({success: false, data: {message:'Gagal menambahkan siswa ke dalam kelas karena sudah terdaftar di dalam kelas.'}})
+          }else if(count == 0){//Siswa belum terdaftar di kelas
+            //Menambahkan siswa ke kelas
+            //var guruMapel = { guru: idGuru, mapel: idMapel }
+
+            PenggunaSiswa.update(
+                { _id: idSiswa },
+                { $push: { kelas: idKelas } }
+            ).exec(function (err, results) {
+              if(err){
+               return res.json({success: false, data: {message:err}})
+             }else{
+               //Menambahkan siswa ke dalam kelas
+               return res.json({success: true, data: {message:'Berhasil menambahkan siswa ke dalam kelas.'}})
+
+
              }
             })
 
