@@ -39,7 +39,7 @@ router.group("/daftar_kelas", (router) => {
 router.group("/pengaturan", (router) => {
     router.post('/siswa/kelas/tambah', userController.siswa_kelas_tambah);
     router.post('/siswa/prestasi/tambah', userController.siswa_prestasi_tambah);
-    router.post('/siswa/profil/ubah', userController.siswa_profil_ubah);
+    //router.post('/siswa/profil/ubah', userController.siswa_profil_ubah); HAPUS KALAU SUDAH BENAR FUNGSI UBAH PROFIL
     router.post('/siswa/foto_profil/ubah', userController.siswa_foto_profil_ubah);
     router.post('/siswa/pengalaman_organisasi/tambah', userController.siswa_pengalaman_organisasi_tambah);
     router.post('/siswa/minat_bakat/tambah', userController.siswa_minat_bakat_tambah);
@@ -48,6 +48,7 @@ router.group("/pengaturan", (router) => {
     router.post('/siswa/bahasa_yang_dikuasai/tambah', userController.siswa_bahasa_yang_dikuasai_tambah);
     router.post('/siswa/karya/tambah', userController.siswa_karya_tambah);
     router.post('/siswa/profil/ubah', userController.siswa_profil_ubah);
+    router.post('/siswa/email/ubah', userController.siswa_email_ubah);
     router.post('/siswa/medsos/ubah', userController.siswa_medsos_ubah);
     router.post('/guru/profil/ubah', userController.guru_profil_ubah);
     router.post('/guru/foto_profil/ubah', userController.guru_foto_profil_ubah);
@@ -82,6 +83,8 @@ router.post('/keluar', userController.keluar);
 router.post('/cek_session', userController.cek_session);
 
 router.post('/pemilik_token', userController.pemilik_token);
+
+router.post('/ambil_email', userController.ambil_email);
 
 router.group("/poin", (router) => {
     router.post("/tambah", userController.tambah_poin);
