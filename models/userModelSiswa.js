@@ -17,6 +17,17 @@ var UserSchema = Schema({
   },
   kelas: [{type: Schema.ObjectId, ref: 'kelas'}],
   prestasi: [],
+  pengalaman_organisasi: [],
+  minat_bakat: [],
+  sertifikat: [],
+  hobi: [],
+  media_sosial: {
+    facebook : {type: String, default: '-'},
+    instagram : {type: String, default: '-'},
+    twitter : {type: String, default: '-'}
+     },
+  bahasa_yang_dikuasai: [],
+  karya: [],
   created_at: { type: Date, default: Date.now},
   updated_at: { type: Date, default: Date.now}
 },{collection: 'pengguna'});
