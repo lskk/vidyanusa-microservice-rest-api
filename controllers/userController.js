@@ -4,7 +4,7 @@ var Poin = require('../models/poinModel');
 var UserSiswa = require('../models/userModelSiswa');//user siswa
 var Session = require('../models/sessionModel');
 var Class = require('../models/classModel');
-
+var mongoose = require('mongoose');
 //Import library
 
 var async = require('async');
@@ -12,14 +12,7 @@ var moment = require('moment');
 var md5 = require('md5')
 var restClient = require('node-rest-client').Client;
 var rClient = new restClient();
-// var rClient = new restClient({
-//   proxy:{
-//             host:"",
-//             port: ,
-//             user:"",
-//             password:""
-//         }
-// });
+
 var base_api_general_url = 'http://apigeneral.vidyanusa.id';
 
 var salt_password = 'LkywIKIDJk'
@@ -34,7 +27,7 @@ function randomAccessToken() {
   for (var i = 0; i < 30; i++)
     text += possible.charAt(Math.floor(Math.random() * possible.length));
 
-  return text;
+  return Date.now()+text;
 }
 
 function randomPasswordMurni() {
@@ -115,29 +108,34 @@ exports.masuk = function(req,res) {
                      //console.log("Pjg Kembalian: "+results.length)
                      var idSession = dataSession.data[0]._id
 
-                     Session.update({ _id: idSession }, { $set: { end_at: Date.now() }})
-                      .exec(function (err, results) {
-                          if (err) {
+                     Session.update({user_id: mongoose.Types.ObjectId(idPengguna)}, { $set: { end_at: Date.now() }}, {multi: true}, function (err, results) {
+                       if (err) {
 
-                          }else{
-                            // Buat baru access token di collection session
-                            var inputan = new Session(
-                              {
-                                user_id: idPengguna,
-                                access_token: generateAccessToken,
-                                platform: 'web'
-                              }
-                            );
+                       }else{
 
-                            inputan.save(function(err){
-                              if (err) {
-                                //return res.json({success: false, data: err})
-                              } else {
-                                //accessToken = generateAccessToken
-                              }
-                            })
-                          }
-                      })
+                         // Buat baru access token di collection session
+                         var inputan = new Session(
+                           {
+                             user_id: idPengguna,
+                             access_token: generateAccessToken,
+                             platform: 'web'
+                           }
+                         );
+
+                         inputan.save(function(err){
+                           if (err) {
+                             //return res.json({success: false, data: err})
+                           } else {
+                             //accessToken = generateAccessToken
+                           }
+                         })
+
+                       }
+
+                     })
+
+
+
                    }
                  });
 
@@ -156,95 +154,7 @@ exports.masuk = function(req,res) {
        }else if(results.length == 0){//Akun tidak ditemukan
 
 
-           //Jalankan fungsi login dengan username
-           User.find({'profil.username':inputan.email,'sandi':md5(inputan.sandi+salt_password)})
-               .exec(function (err, results){
-                   if(err){
-                       return res.json({success: false, data: err})
-                   }else{
-                       if(results.length == 1){//Akun ditemukan
-
-                           var dataPengguna = {data: results}
-                           var username = dataPengguna.data[0].profil.username
-                           var peran = dataPengguna.data[0].peran
-                           var idPengguna = dataPengguna.data[0]._id
-
-                           var generateAccessToken = randomAccessToken()
-
-                           //Mengatur kembalian
-                           async.series({
-                               one: function(callback) {
-                                   //Mencek apakah sudah ada access token untuk pengguna yang masuk
-                                   Session.find({'user_id':idPengguna,'end_at':null,'platform':'web'})
-                                       .exec(function (err, results) {
-                                           var dataSession
-
-                                           if(results.length == 0){//Pengguna belum memiliki session dengan end date null
-                                               // Buat baru access token di collection session
-                                               var inputan = new Session(
-                                                   {
-                                                       user_id: idPengguna,
-                                                       access_token: generateAccessToken,
-                                                       platform: 'web'
-                                                   }
-                                               );
-
-                                               inputan.save(function(err){
-                                                   if (err) {
-                                                       //return res.json({success: false, data: err})
-                                                   } else {
-                                                       //accessToken = generateAccessToken
-                                                   }
-                                               })
-
-                                           }else if(results.length == 1){//Pengguna sudah memiliki session dengan end date null
-                                               // Meng ekspire kan access token
-                                               var dataSession = {data: results}
-                                               //console.log("Pjg Kembalian: "+results.length)
-                                               var idSession = dataSession.data[0]._id
-
-                                               Session.update({ _id: idSession }, { $set: { end_at: Date.now() }})
-                                                   .exec(function (err, results) {
-                                                       if (err) {
-
-                                                       }else{
-                                                           // Buat baru access token di collection session
-                                                           var inputan = new Session(
-                                                               {
-                                                                   user_id: idPengguna,
-                                                                   access_token: generateAccessToken,
-                                                                   platform: 'web'
-                                                               }
-                                                           );
-
-                                                           inputan.save(function(err){
-                                                               if (err) {
-                                                                   //return res.json({success: false, data: err})
-                                                               } else {
-                                                                   //accessToken = generateAccessToken
-                                                               }
-                                                           })
-                                                       }
-                                                   })
-                                           }
-                                       });
-
-                                   callback(null, 1);
-                               },
-                               two: function(callback){
-                                   return res.json({success: true, data: {access_token: generateAccessToken, id_pengguna: idPengguna, username: username, peran: peran}})
-
-                                   callback(null, 2);
-                               }
-                           }, function(err, results) {
-                               // results is now equal to: {one: 1, two: 2}
-                           })
-
-                       }else if(results.length == 0){//Akun tidak ditemukan
-                        return res.json({success: false, data: {message: 'Maaf email atau username atau sandi anda salah.'}})
-                       }
-                   }
-               })
+          return res.json({success: false, data: {message: 'Maaf email  atau sandi anda salah.'}})
 
 
        }else{
@@ -326,29 +236,32 @@ exports.masuk_android = function(req,res) {
                                         //console.log("Pjg Kembalian: "+results.length)
                                         var idSession = dataSession.data[0]._id
 
-                                        Session.update({ _id: idSession }, { $set: { end_at: Date.now() }})
-                                            .exec(function (err, results) {
-                                                if (err) {
+                                        Session.update({user_id: mongoose.Types.ObjectId(idPengguna)}, { $set: { end_at: Date.now() }}, {multi: true}, function (err, results) {
+                                          if (err) {
 
-                                                }else{
-                                                    // Buat baru access token di collection session
-                                                    var inputan = new Session(
-                                                        {
-                                                            user_id: idPengguna,
-                                                            access_token: generateAccessToken,
-                                                            platform: 'android'
-                                                        }
-                                                    );
+                                          }else{
 
-                                                    inputan.save(function(err){
-                                                        if (err) {
-                                                            //return res.json({success: false, data: err})
-                                                        } else {
-                                                            //accessToken = generateAccessToken
-                                                        }
-                                                    })
-                                                }
+                                            // Buat baru access token di collection session
+                                            var inputan = new Session(
+                                              {
+                                                user_id: idPengguna,
+                                                access_token: generateAccessToken,
+                                                platform: 'web'
+                                              }
+                                            );
+
+                                            inputan.save(function(err){
+                                              if (err) {
+                                                //return res.json({success: false, data: err})
+                                              } else {
+                                                //accessToken = generateAccessToken
+                                              }
                                             })
+
+                                          }
+
+                                        })
+
                                     }
                                 });
 
@@ -367,95 +280,7 @@ exports.masuk_android = function(req,res) {
                 }else if(results.length == 0){//Akun tidak ditemukan
 
 
-                    //Jalankan fungsi login dengan username
-                    User.find({'profil.username':inputan.email,'sandi':md5(inputan.sandi+salt_password)})
-                        .exec(function (err, results){
-                            if(err){
-                                return res.json({success: false, data: err})
-                            }else{
-                                if(results.length == 1){//Akun ditemukan
-
-                                    var dataPengguna = {data: results}
-                                    var username = dataPengguna.data[0].profil.username
-                                    var peran = dataPengguna.data[0].peran
-                                    var idPengguna = dataPengguna.data[0]._id
-
-                                    var generateAccessToken = randomAccessToken()
-
-                                    //Mengatur kembalian
-                                    async.series({
-                                        one: function(callback) {
-                                            //Mencek apakah sudah ada access token untuk pengguna yang masuk
-                                            Session.find({'user_id':idPengguna,'end_at':null,'platform':'android'})
-                                                .exec(function (err, results) {
-                                                    var dataSession
-
-                                                    if(results.length == 0){//Pengguna belum memiliki session dengan end date null
-                                                        // Buat baru access token di collection session
-                                                        var inputan = new Session(
-                                                            {
-                                                                user_id: idPengguna,
-                                                                access_token: generateAccessToken,
-                                                                platform: 'android'
-                                                            }
-                                                        );
-
-                                                        inputan.save(function(err){
-                                                            if (err) {
-                                                                //return res.json({success: false, data: err})
-                                                            } else {
-                                                                //accessToken = generateAccessToken
-                                                            }
-                                                        })
-
-                                                    }else if(results.length == 1){//Pengguna sudah memiliki session dengan end date null
-                                                        // Meng ekspire kan access token
-                                                        var dataSession = {data: results}
-                                                        //console.log("Pjg Kembalian: "+results.length)
-                                                        var idSession = dataSession.data[0]._id
-
-                                                        Session.update({ _id: idSession }, { $set: { end_at: Date.now() }})
-                                                            .exec(function (err, results) {
-                                                                if (err) {
-
-                                                                }else{
-                                                                    // Buat baru access token di collection session
-                                                                    var inputan = new Session(
-                                                                        {
-                                                                            user_id: idPengguna,
-                                                                            access_token: generateAccessToken,
-                                                                            platform: 'android'
-                                                                        }
-                                                                    );
-
-                                                                    inputan.save(function(err){
-                                                                        if (err) {
-                                                                            //return res.json({success: false, data: err})
-                                                                        } else {
-                                                                            //accessToken = generateAccessToken
-                                                                        }
-                                                                    })
-                                                                }
-                                                            })
-                                                    }
-                                                });
-
-                                            callback(null, 1);
-                                        },
-                                        two: function(callback){
-                                            return res.json({success: true, data: {access_token: generateAccessToken, id_pengguna: idPengguna, username: username, peran: peran}})
-
-                                            callback(null, 2);
-                                        }
-                                    }, function(err, results) {
-                                        // results is now equal to: {one: 1, two: 2}
-                                    })
-
-                                }else if(results.length == 0){//Akun tidak ditemukan
-                                    return res.json({success: false, data: {message: 'Maaf email atau username atau sandi anda salah.'}})
-                                }
-                            }
-                        })
+                    return res.json({success: false, data: {message: 'Maaf email atau sandi anda salah.'}})
 
 
                 }else{
@@ -617,7 +442,7 @@ exports.daftar_proses_siswa = function(req,res) {
     req.checkBody('nama_lengkap', 'Mohon isi field Nama Lengkap').notEmpty();//
     req.checkBody('jenis_kelamin', 'Mohon pilih Jenis Kelamin').notEmpty();//
     req.checkBody('sandi', 'Mohon isi field Sandi').notEmpty();//
-    //req.checkBody('kode_kelas', 'Mohon isi field kode kelas').notEmpty();//
+    req.checkBody('sekolah', 'Mohon isi field sekolah').notEmpty();//
 
     //Dibersihkan dari Special Character
     req.sanitize('email').escape();
@@ -625,14 +450,14 @@ exports.daftar_proses_siswa = function(req,res) {
     req.sanitize('nama_lengkap').escape();
     req.sanitize('jenis_kelamin').escape();
     req.sanitize('sandi').escape();
-    //req.sanitize('kode_kelas').escape();
+    req.sanitize('sekolah').escape();
 
     req.sanitize('email').trim();
     req.sanitize('username').trim();
     req.sanitize('nama_lengkap').trim();
     req.sanitize('jenis_kelamin').trim();
     req.sanitize('sandi').trim();
-    //req.sanitize('kode_kelas').trim();
+    req.sanitize('sekolah').trim();
 
     //Menjalankan validasi
     var errors = req.validationErrors();
@@ -668,7 +493,8 @@ exports.daftar_proses_siswa = function(req,res) {
                  username: req.body.username,
                  nama_lengkap: req.body.nama_lengkap,
                  jenis_kelamin: req.body.jenis_kelamin,
-               }
+               },
+               sekolah: req.body.sekolah
              }
            );
 
@@ -714,9 +540,11 @@ exports.daftar_proses_siswa = function(req,res) {
 
                                   inputan.save(function(err){
                                     if (err) {
+                                      console.log('session gagal dibuat karena:',+err)
                                       //return res.json({success: false, data: err})
                                     } else {
                                       //accessToken = generateAccessToken
+                                      console.log('session berhasil dibuat')
                                     }
                                   })
 
@@ -726,10 +554,10 @@ exports.daftar_proses_siswa = function(req,res) {
                                   //console.log("Pjg Kembalian: "+results.length)
                                   var idSession = dataSession.data[0]._id
 
-                                  Session.update({ _id: idSession }, { $set: { end_at: Date.now() }})
+                                  Session.update({ _id: idSession }, { $set: { end_at: Date.now() }}, {multi: true})
                                    .exec(function (err, results) {
                                        if (err) {
-
+                                         console.log('session gagal diupdate karena:',+err)
                                        }else{
                                          // Buat baru access token di collection session
                                          var inputan = new Session(
@@ -742,8 +570,10 @@ exports.daftar_proses_siswa = function(req,res) {
 
                                          inputan.save(function(err){
                                            if (err) {
+                                             console.log('session gagal dibuat setelah ditemukan end date tidak null karena:',+err)
                                              //return res.json({success: false, data: err})
                                            } else {
+                                             console.log('session berhasil dibuat setelah ditemukan end date tidak null')
                                              //accessToken = generateAccessToken
                                            }
                                          })
@@ -793,7 +623,7 @@ exports.daftar_proses_siswa_android = function(req,res) {
   req.checkBody('nama_lengkap', 'Mohon isi field Nama Lengkap').notEmpty();//
   req.checkBody('jenis_kelamin', 'Mohon pilih Jenis Kelamin').notEmpty();//
   req.checkBody('sandi', 'Mohon isi field Sandi').notEmpty();//
-  //req.checkBody('kode_kelas', 'Mohon isi field kode kelas').notEmpty();//
+  req.checkBody('sekolah', 'Mohon isi field sekolah').notEmpty();//
 
   //Dibersihkan dari Special Character
   req.sanitize('email').escape();
@@ -801,14 +631,14 @@ exports.daftar_proses_siswa_android = function(req,res) {
   req.sanitize('nama_lengkap').escape();
   req.sanitize('jenis_kelamin').escape();
   req.sanitize('sandi').escape();
-  //req.sanitize('kode_kelas').escape();
+  req.sanitize('sekolah').escape();
 
   req.sanitize('email').trim();
   req.sanitize('username').trim();
   req.sanitize('nama_lengkap').trim();
   req.sanitize('jenis_kelamin').trim();
   req.sanitize('sandi').trim();
-  //req.sanitize('kode_kelas').trim();
+  req.sanitize('sekolah').trim();
 
   //Menjalankan validasi
   var errors = req.validationErrors();
@@ -844,7 +674,8 @@ exports.daftar_proses_siswa_android = function(req,res) {
                username: req.body.username,
                nama_lengkap: req.body.nama_lengkap,
                jenis_kelamin: req.body.jenis_kelamin,
-             }
+             },
+             sekolah: req.body.sekolah
            }
          );
 
@@ -902,7 +733,7 @@ exports.daftar_proses_siswa_android = function(req,res) {
                                 //console.log("Pjg Kembalian: "+results.length)
                                 var idSession = dataSession.data[0]._id
 
-                                Session.update({ _id: idSession }, { $set: { end_at: Date.now() }})
+                                Session.update({ _id: idSession }, { $set: { end_at: Date.now() }},{multi: true})
                                  .exec(function (err, results) {
                                      if (err) {
 
@@ -1079,7 +910,7 @@ exports.daftar_proses_guru = function(req,res) {
                                   //console.log("Pjg Kembalian: "+results.length)
                                   var idSession = dataSession.data[0]._id
 
-                                  Session.update({ _id: idSession }, { $set: { end_at: Date.now() }})
+                                  Session.update({ _id: idSession }, {multi: true}, { $set: { end_at: Date.now() }})
                                    .exec(function (err, results) {
                                        if (err) {
 
@@ -1315,6 +1146,61 @@ exports.daftar_proses_guru_android = function(req,res) {
 
 }
 // akses token
+
+exports.siswa_cek_sekolah = function (req,res) {
+
+  //Inisial validasi
+    req.checkBody('pengguna', 'Mohon isi id pengguna').notEmpty();
+    req.checkBody('access_token', 'Mohon isi akses token').notEmpty();
+
+    //Dibersihkan dari Special Character
+    req.sanitize('pengguna').escape();
+    req.sanitize('access_token').escape();
+
+    req.sanitize('pengguna').trim();
+    req.sanitize('access_token').trim();
+
+    var errors = req.validationErrors();
+
+    if(errors){//Terjadinya kesalahan
+        return res.json({success: false, data: errors})
+    }else{
+
+      //Cek session terlebih dahulu
+      args = {
+        	data: {
+            access_token: req.body.access_token},
+        	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        };
+
+      //Cek session terlebih dahulu sebelum menambahkan poin
+      rClient.post(base_api_general_url+'/cek_session', args, function (data, response) {
+
+          if(data.success == true){//session berlaku
+
+            //Cek sekolah pada pengguna sebagai siswa
+            UserSiswa.find({'_id':req.body.pengguna,'sekolah':{$exists: true}})
+             .exec(function (err, results) {
+               if(results.length == 0)//Siswa tidak terdaftar pada suatu sekolah
+                return res.json({success: false, data: {message:'Siswa tidak terdaftar pada suatu sekolah'}})
+
+                return res.json({success: true, data: {message:'Siswa terdaftar pada suatu sekolah'}})
+             });
+
+          }else{//session tidak berlaku
+            //console.log('Session Tidak Berlaku:'+JSON.stringify())
+            return res.json({success: false, data: {message:'Token tidak berlaku'}})
+
+          }
+
+      });
+
+
+
+
+    }
+}
+
 exports.get_profile = function(req,res,next) {
 
   if(req.body.username == '' || req.body.username == null ){
@@ -1503,14 +1389,27 @@ exports.keluar = function(req,res) {
   if(req.body.access_token == null){
     return res.json({success:false,message:'Parameter akses token tidak boleh kosong'})
   }else{
-    Session.update({ access_token: req.body.access_token }, { $set: { end_at: Date.now() }})
-     .exec(function (err, results) {
-         if (err) {
-           return res.json({success:false})
-         }else{
-           return res.json({success:true})
-         }
-     })
+
+    // Session.update({ access_token: req.body.access_token }, { $set: { end_at: Date.now() }})
+    //  .exec(function (err, results) {
+    //      if (err) {
+    //        return res.json({success:false})
+    //      }else{
+    //        return res.json({success:true})
+    //      }
+    //  })
+
+    //Mengekspiredkan semua token yang dimiliki oleh seorang pengguna
+    var idPengguna = req.body.pengguna
+    Session.update({user_id: mongoose.Types.ObjectId(idPengguna)}, { $set: { end_at: Date.now() }}, {multi: true}, function (err, results) {
+      if (err) {
+        return res.json({success:false})
+      }else{
+        return res.json({success:true})
+      }
+
+    })
+
   }
 
 
@@ -1594,6 +1493,22 @@ exports.daftar_poin = function(req, res) {
 
 }
 
+exports.leaderboard = function(req, res) {
+
+  if(req.body.id_pengguna == null || req.body.id_pengguna == ''){
+    return res.json({success: false, data: {message:'Param id pengguna tidak boleh kosong.'}})
+  }else{
+
+    Poin.find({'id_pengguna':req.body.id_pengguna})
+     .sort([['created_at', 'descending']])
+     .exec(function (err, results) {
+       return res.json({success: true, data: results})
+     })
+
+  }
+
+}
+
 exports.cek_session = function(req, res) {
 
   Session.find({'access_token':req.body.access_token,'end_at':null})
@@ -1607,6 +1522,40 @@ exports.cek_session = function(req, res) {
 
    });
 
+}
+
+exports.expired_session = function (req, res) {
+
+  //Inisial validasi
+  req.checkBody('pengguna', 'Mohon isi id Pengguna').notEmpty();//
+
+  //Dibersihkan dari Special Character
+  req.sanitize('pengguna').escape();
+  req.sanitize('pengguna').trim();
+
+  //Menjalankan validasi
+  var errors = req.validationErrors();
+
+  //Eksekusi validasi
+  if(errors){//Terjadinya kesalahan
+
+      return res.json({success: false, data: {message:errors}})
+
+  }else{//Ubah semua end date ke date skrng terhadap session pengguna
+
+
+    Session.update({user_id: mongoose.Types.ObjectId(req.body.pengguna)}, { $set: { end_at: Date.now() }}, {multi: true}, function (err, results) {
+
+      if (err) {
+        return res.json({success:false})
+      }else{
+
+        return res.json({success:true})
+      }
+
+    })
+
+  }
 }
 
 exports.pemilik_token = function(req, res) {

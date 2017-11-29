@@ -37,6 +37,7 @@ router.group("/daftar_kelas", (router) => {
 })
 
 router.group("/pengaturan", (router) => {
+    router.post('/siswa/cek_sekolah', userController.siswa_cek_sekolah);
     router.post('/siswa/kelas/tambah', userController.siswa_kelas_tambah);
     router.post('/siswa/prestasi/tambah', userController.siswa_prestasi_tambah);
     router.post('/siswa/profil/ubah', userController.siswa_profil_ubah);
@@ -54,6 +55,7 @@ router.group("/pengaturan", (router) => {
     router.post('/guru/foto_profil/ubah', userController.guru_foto_profil_ubah);
     router.post('/sekolah/profil/ubah', userController.sekolah_profil_ubah);
     router.post('/sekolah/foto_profil/ubah', userController.sekolah_foto_profil_ubah);
+    router.post('/pengguna/expired_session', userController.expired_session);
 })
 
 
@@ -92,6 +94,7 @@ router.post('/ambil_email', userController.ambil_email);
 router.group("/poin", (router) => {
     router.post("/tambah", userController.tambah_poin);
     router.post("/daftar", userController.daftar_poin);
+    router.post("/leaderboard", userController.leaderboard);
 });
 
 

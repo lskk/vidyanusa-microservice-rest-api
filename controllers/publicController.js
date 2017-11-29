@@ -6,14 +6,7 @@ var Kelas = require('../models/classModel');
 var async = require('async');
 var restClient = require('node-rest-client').Client;
 var rClient = new restClient();
-// var rClient = new restClient({
-//   proxy:{
-//             host:"",
-//             port: ,
-//             user:"",
-//             password:""
-//         }
-// });
+
 var base_api_general_url = 'http://apigeneral.vidyanusa.id';
 
 function randomKodeKelas() {

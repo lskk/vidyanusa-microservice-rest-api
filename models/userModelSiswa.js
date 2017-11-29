@@ -7,7 +7,6 @@ var UserSchema = Schema({
   email: {type: String, min: 1, max: 100, required: true},
   sandi: {type: String, min: 1, max: 100, required: true},
   peran: {type: Number, required: true},
-  kelas: {type: Schema.ObjectId, ref: 'kelas'},
   profil:{
     username: {type: String, min: 1, max: 100, required: true},
     nama_lengkap: {type: String, min: 1, max: 100, required: true},
@@ -16,6 +15,7 @@ var UserSchema = Schema({
     bio: {type: String, min: 1, max: 100, default: '-'}
   },
   kelas: [{type: Schema.ObjectId, ref: 'kelas'}],
+  sekolah: {type: Schema.ObjectId, ref: 'sekolah', required: true},
   prestasi: [],
   pengalaman_organisasi: [],
   minat_bakat: [],
