@@ -58,3 +58,5 @@ typings/
 .env
 
 app.js
+global.json
+userController.js

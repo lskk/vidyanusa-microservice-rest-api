@@ -1,0 +1,3 @@
+[0mPOST /cek_session [32m200 [0m345.016 ms - 52[0m
+[0mPOST /cek_session [32m200 [0m477.295 ms - 52[0m
+[0mPOST /cek_session [32m200 [0m484.780 ms - 52[0m

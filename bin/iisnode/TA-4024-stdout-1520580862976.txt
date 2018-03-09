@@ -1,0 +1,3 @@
+[0mGET /mapel [32m200 [0m377.055 ms - 540[0m
+Status expire jadinya:false
+[0mPOST /profil [32m200 [0m2082.498 ms - 1214[0m

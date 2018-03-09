@@ -1,2 +1,0 @@
-Status expire jadinya:false
-[0mPOST /profil/siswa [32m200 [0m2308.976 ms - 659[0m

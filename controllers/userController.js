@@ -11,9 +11,17 @@ var async = require('async');
 var moment = require('moment');
 var md5 = require('md5')
 var restClient = require('node-rest-client').Client;
-var rClient = new restClient();
-
-var base_api_general_url = 'http://apigeneral.vidyanusa.id';
+//var rClient = new restClient();
+const Global = require('../global.json');
+var rClient = new restClient({
+    proxy:{
+        host:Global.proxy_host,
+        port: Global.proxy_port,
+        user:Global.proxy_user,
+        password:Global.proxy_password
+    }
+});
+var base_api_general_url = 'http://apigeneraldev.vidyanusa.id';
 
 var salt_password = 'LkywIKIDJk'
 
@@ -1456,11 +1464,24 @@ exports.tambah_poin = function(req, res) {
             }
           );
 
-          inputan.save(function(err){
+          inputan.save(function(err,data){
             if (err) {
               return res.json({success: false, data: {message:err}})
             } else {
-              return res.json({success: true, data: {message:'Poin berhasil ditambahkan.'}})
+              console.log("Poin id: "+JSON.stringify(inputan.id))
+              console.log("Poin _id: "+JSON.stringify(inputan._id))
+              
+              //Update array poin pengguna dengan memasukan id poin
+              UserSiswa.update(
+                  { _id: req.body.id_pengguna },
+                  { $push: { poin: inputan._id } }
+              ).exec(function (err, results) {
+                if(err){
+                 return res.json({success: false, data: {message:err}})
+               }else{
+                 return res.json({success: true, data: {message:'Poin berhasil ditambahkan.'}})
+               }
+              })
             }
           })
 

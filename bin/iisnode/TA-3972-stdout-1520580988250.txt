@@ -1,0 +1,2 @@
+[0mGET /mapel [36m304 [0m608.147 ms - -[0m
+Status expire jadinya:false

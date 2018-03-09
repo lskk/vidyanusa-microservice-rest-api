@@ -1,1 +1,0 @@
-[0mPOST /cek_session [32m200 [0m340.418 ms - 52[0m

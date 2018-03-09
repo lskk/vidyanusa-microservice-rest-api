@@ -28,6 +28,22 @@ var UserSchema = Schema({
      },
   bahasa_yang_dikuasai: [],
   karya: [],
+  poin:[
+      {
+      type: Schema.ObjectId, ref: 'poin'
+    }
+  ],
+  kegiatan:[
+      {
+          type: Schema.ObjectId, ref: 'kegiatan'
+      }
+  ],
+  lencana:[
+      {
+      type: Schema.ObjectId, ref: 'lencana'
+    }
+  ],
+  status_keaktifan: {type: Number , default: 1},
   created_at: { type: Date, default: Date.now},
   updated_at: { type: Date, default: Date.now}
 },{collection: 'pengguna'});

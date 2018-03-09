@@ -5,9 +5,17 @@ var Sekolah = require('../models/schoolModel');
 var Kelas = require('../models/classModel');
 var async = require('async');
 var restClient = require('node-rest-client').Client;
-var rClient = new restClient();
-
-var base_api_general_url = 'http://apigeneral.vidyanusa.id';
+//var rClient = new restClient();
+const Global = require('../global.json');
+var rClient = new restClient({
+    proxy:{
+        host:Global.proxy_host,
+        port: Global.proxy_port,
+        user:Global.proxy_user,
+        password:Global.proxy_password
+    }
+});
+var base_api_general_url = 'http://apigeneraldev.vidyanusa.id';
 
 function randomKodeKelas() {
   var text = "";
