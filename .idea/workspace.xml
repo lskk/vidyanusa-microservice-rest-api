@@ -2,35 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="21e77c72-f2ca-4d2f-bb12-efe64dffb08c" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-1356-stderr-1508539223731.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-1356-stdout-1508539223717.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-1812-stderr-1508467523236.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-1812-stdout-1508467523224.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-228-stderr-1508469851744.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-228-stdout-1508469851733.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-2688-stdout-1508611190925.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-4064-stderr-1508467534298.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-4064-stdout-1508467534287.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-4780-stderr-1508491650543.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-4780-stdout-1508491650532.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-5352-stderr-1508469862519.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-5352-stdout-1508469862507.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-5536-stderr-1508469854187.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-5536-stdout-1508469854175.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-5568-stderr-1508617955283.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-5568-stdout-1508617955272.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-5736-stdout-1508452541399.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-6076-stderr-1508467525722.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-6076-stdout-1508467525711.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-7088-stderr-1508617959401.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/TA-7088-stdout-1508617959390.txt" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/bin/iisnode/index.html" afterPath="$PROJECT_DIR$/bin/iisnode/index.html" />
-      <change beforePath="$PROJECT_DIR$/controllers/logController.js" afterPath="$PROJECT_DIR$/controllers/logController.js" />
-      <change beforePath="$PROJECT_DIR$/controllers/publicController.js" afterPath="$PROJECT_DIR$/controllers/publicController.js" />
-      <change beforePath="$PROJECT_DIR$/controllers/userController.js" afterPath="$PROJECT_DIR$/controllers/userController.js" />
-      <change beforePath="$PROJECT_DIR$/models/userModel.js" afterPath="$PROJECT_DIR$/models/userModel.js" />
-      <change beforePath="$PROJECT_DIR$/models/userModelSiswa.js" afterPath="$PROJECT_DIR$/models/userModelSiswa.js" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -212,12 +184,12 @@
       <workItem from="1514965765773" duration="1860000" />
       <workItem from="1515467974951" duration="39000" />
       <workItem from="1520588571669" duration="863000" />
-      <workItem from="1520590594026" duration="1257000" />
+      <workItem from="1520590594026" duration="1308000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10748000" />
+    <option name="totallyTimeSpent" value="10799000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
